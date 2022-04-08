@@ -4,23 +4,23 @@ import { Stage } from './Stage'
 export class Map {
   _params: any
   _stage!: Stage
-  x: number = 0				           	                                // 地图起点坐标
-  y: number = 0					                                          // 地图起点坐标
-  size: number = 20       				                                // 地图单元的宽度
-  data: any[] = []                                                // 地图数据
-  xLength: number = 0				                                      // 二维数组x轴长度
-  yLength: number = 0			      	                                // 二维数组y轴长度
-  // 布局相关
-  frames: number = 1				                                      // 速度等级,内部计算器times多少帧变化一次
-  times: number = 0				                                        // 刷新画布计数(用于循环动画状态判断)
-  cache: boolean = false		                                      // 是否静态（如静态则设置缓存）
+  x: number = 0				           	                                // The coordinates of the starting point of the map
+  y: number = 0					                                          // The coordinates of the starting point of the map
+  size: number = 20       				                                // width of map cells
+  data: any[] = []                                                // map data
+  xLength: number = 0				                                      // 2D array x-axis length
+  yLength: number = 0			      	                                // 2D array y-axis length
+  // layout related
+  frames: number = 1				                                      // Speed level, how many frames change in internal calculator times
+  times: number = 0				                                        // Refresh canvas count (for loop animation state judgment)
+  cache: boolean = false		                                      // Whether it is static (if static, set the cache)
   imageData!: ImageData | null
   constructor(params: {} = {}) {
     this._params = params
     Object.assign(this, this._params)
   }
-  update: () => void = () => { } 	                                // 更新地图数据
-  draw: (context: any, globalObj: GlobalEnv) => void = () => { }  // 绘制
+  update: () => void = () => { } 	                                // Update map data
+  draw: (context: any, globalObj: GlobalEnv) => void = () => { }  // draw
   get(px: number, py: number) {
     if (this.data[py] && typeof this.data[py][px] !== 'undefined') {
       return this.data[py][px]
@@ -53,7 +53,7 @@ export class Map {
       type: 'path'
     }
     const options = Object.assign({}, defaults, params)
-    // 当起点或终点设置在墙上
+    // When the start or end point is set on the wall
     if (options.map[options.start.y][options.start.x] || options.map[options.end.y][options.end.x]) {
       return []
     }
@@ -62,19 +62,19 @@ export class Map {
     const yLength: number = options.map.length
     const xLength: number = options.map[0].length
 
-    // 步骤的映射
+    // map of steps
     const steps: Vector[][] = []
     for (let y = yLength; y--;) {
       steps[y] = new Array(xLength).fill(0)
     }
-    // 获取地图上的值
+    // Get the value on the map
     const _getValue = (x: number, y: number) => {
       if (options.map[y] && typeof options.map[y][x] !== 'undefined') {
         return options.map[y][x]
       }
       return -1
     }
-    // 判定是否可走,可走放入列表
+    // Determine if you can walk, you can put it into the list
     const _next = (to: Vector) => {
       const value = _getValue(to.x, to.y)
       if (value < 1) {
@@ -88,12 +88,12 @@ export class Map {
         }
       }
     }
-    // 找线路
+    // find the line
     const _render = (list: Vector[]) => {
       const newList: Vector[] = []
       const next = (from: Vector, to: Vector) => {
         const value = _getValue(to.x, to.y)
-        // 当前点是否可以走
+        // Is it possible to go to the current point
         if (value < 1) {
           if (value === -1) {
             to.x = (to.x + xLength) % xLength

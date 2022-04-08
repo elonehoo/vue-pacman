@@ -1,40 +1,25 @@
 import { GlobalEnv } from '~/util/Interfaces'
-import {
-  Map,
-  BaseMap,
-  BeanMap
-} from './Map'
-import {
-  Item,
-  LogoItem,
-  NameItem,
-  ScoreLevelItem,
-  StatusItem,
-  LifeItem,
-  PlayerItem,
-  NpcItem,
-  OverItem,
-  FinalScoreItem
-} from './Item'
+import { Map,BaseMap,BeanMap } from './Map'
+import { Item, LogoItem,NameItem,ScoreLevelItem,StatusItem,LifeItem,PlayerItem,NpcItem,OverItem,FinalScoreItem} from './Item'
 
 export class Stage {
   _params: any
-  index: number = 0                                              // 布景索引
-  status: number = 0		                                         // 布景状态, 0表示未激活/结束, 1表示正常, 2表示暂停, 3表示临时状态
-  timeout: number = 0				           	                         // 倒计时(用于过程动画状态判断)
-  CONFIG: any = {}                                               // 地图基础数据
-  maps: Map[] = []                                               // 地图队列
-  BaseMap!: Map                                                  // 基础地图
-  BeanMap!: Map                                                  // Bean地图
-  items: Item[] = []                                             // 对象队列
-  NPCs: Item[] = []                                              // NPC对象队列
-  PLAYER!: Item                                                  // 玩家对象
+  index: number = 0                                              // Scene Index
+  status: number = 0		                                         // Scene state, 0 means inactive/finished, 1 means normal, 2 means paused, 3 means temporary state
+  timeout: number = 0				           	                         // Countdown (for process animation state judgment)
+  CONFIG: any = {}                                               // map base data
+  maps: Map[] = []                                               // map queue
+  BaseMap!: Map                                                  // base map
+  BeanMap!: Map                                                  // Bean map
+  items: Item[] = []                                             // object queue
+  NPCs: Item[] = []                                              // NPC object queue
+  PLAYER!: Item                                                  // player object
   constructor(params: any = {}) {
     this._params = params
     Object.assign(this, this._params)
   }
-  update: (globalObj: GlobalEnv) => boolean | void = () => { }   // 嗅探,处理布局下不同对象的相对关系
-  // 添加对象
+  update: (globalObj: GlobalEnv) => boolean | void = () => { }   // Sniffing, processing the relative relationship of different objects under the layout
+  // add object
   createItem(type: string, options: any) {
     let item: Item = new Item(options)
     if (type === 'logo') { item = new LogoItem(options) }
@@ -56,7 +41,7 @@ export class Stage {
     this.items.push(item)
     return item
   }
-  // 重置物体位置
+  // reset object position
   resetItems() {
     this.status = 1
     this.items.forEach((item) => {
@@ -68,7 +53,7 @@ export class Stage {
       }
     })
   }
-  // 添加地图
+  // Add map
   createMap(type: string, options: any) {
     let map: Map = new Map(options)
     if (type === 'base') { map = new BaseMap(options) }
@@ -80,7 +65,7 @@ export class Stage {
     this.maps.push(map)
     return map
   }
-  // 重置地图
+  // reset map
   resetMaps() {
     this.status = 1
     this.maps.forEach((map) => {
@@ -91,7 +76,7 @@ export class Stage {
       map.imageData = null
     })
   }
-  // 重置布景
+  // reset the scene
   reset() {
     Object.assign(this, this._params)
     this.resetItems()
@@ -128,7 +113,7 @@ export class GameStage extends Stage {
             }
           }
         })
-        // 当没有物品的时候，进入下一关
+        // When there are no items, go to the next level
         if (JSON.stringify(this.BeanMap.data).indexOf('0') < 0) {
           return true
         }

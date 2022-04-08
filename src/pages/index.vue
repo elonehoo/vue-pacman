@@ -13,12 +13,12 @@ const WIDTH = ref(CANVAS_WIDTH)
 const HEIGHT = ref(CANVAS_HEIGHT)
 const stages = ref()
 const currentIndex = ref(0)
-  // 动画变量
+  // animation variable
 const currentFrame = ref(0)
 const handler = ref(0)
-  // 全局变量
+  // global variable
 const globalObj = ref({
-  COLOR: ['#F00', '#F93', '#0CF', '#F9C'],  // NPC 颜色
+  COLOR: ['#F00', '#F93', '#0CF', '#F9C'],  // NPC color
   COS: [1, 0, -1, 0],
   SIN: [0, 1, 0, -1],
   SCORE: 0,
@@ -76,7 +76,7 @@ function initStages(){
 }
 function initSplashStage(){
   const stage = new SplashStage({
-    index: stages.value.length
+    index: stages.value ? stages.value.length : 0,
   })
   stage.createItem('logo',{
     x: WIDTH.value / 2,

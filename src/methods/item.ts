@@ -6,31 +6,31 @@ export class Item {
   _params: any
   _id: number = 0
   _stage!: Stage
-  x: number = 0				           	                                    // 位置坐标:横坐标
-  y: number = 0					                                              // 位置坐标:纵坐标
-  width: number = 20				                                          // 宽
-  height: number = 20				                                          // 高
-  type: number = 0					                                          // 对象类型,0表示普通对象(不与地图绑定),1表示玩家控制对象,2表示程序控制对象
-  color: string = '#F00'			                                        // 标识颜色
-  status: number = 1			       	                                    // 对象状态,0表示未激活/结束,1表示正常,2表示暂停,3表示临时,4表示异常
-  orientation: number = 0			                                        // 当前定位方向,0表示右,1表示下,2表示左,3表示上
-  speed: number = 0				                                            // 移动速度
-  // 地图相关
-  location!: BaseMap       			                                      // 定位地图,Map对象
-  coord!: Coord		       		                                          // 如果对象与地图绑定,需设置地图坐标;若不绑定,则设置位置坐标
-  vector!: Vector	       		                                          // 目标坐标
-  path!: Vector[]			       	                                        // NPC自动行走的路径
-  // 布局相关
-  frames: number = 1				                                          // 速度等级,内部计算器times多少帧变化一次
-  times: number = 0				                                            // 刷新画布计数(用于循环动画状态判断)
-  timeout: number = 0				                                          // 倒计时(用于过程动画状态判断)
-  control: any = {}				                                            // 控制缓存,到达定位点时处理
+  x: number = 0				           	                                    // Position coordinate: abscissa
+  y: number = 0					                                              // Position coordinate: ordinate
+  width: number = 20				                                          // width
+  height: number = 20				                                          // height
+  type: number = 0					                                          // Object type, 0 means normal object (not bound to the map), 1 means player control object, 2 means program control object
+  color: string = '#F00'			                                        // Logo color
+  status: number = 1			       	                                    // Object status, 0 means inactive/finished, 1 means normal, 2 means paused, 3 means temporary, 4 means abnormal
+  orientation: number = 0			                                        // Current positioning direction, 0 means right, 1 means down, 2 means left, 3 means up
+  speed: number = 0				                                            // Moving speed
+  // map related
+  location!: BaseMap       			                                      // Location map, Map object
+  coord!: Coord		       		                                          // If the object is bound to the map, set the map coordinates; if not, set the location coordinates
+  vector!: Vector	       		                                          // target coordinates
+  path!: Vector[]			       	                                        // NPC auto-walking path
+  // layout related
+  frames: number = 1				                                          // Speed level, how many frames change in internal calculator times
+  times: number = 0				                                            // Refresh canvas count (for loop animation state judgment)
+  timeout: number = 0				                                          // Countdown (for process animation state judgment)
+  control: any = {}				                                            // Control the cache and process it when the anchor point is reached
   constructor(params: {} = {}) {
     this._params = params
     Object.assign(this, this._params)
   }
-  update: (globalObj: GlobalEnv) => void = () => { }                  // 更新参数信息
-  draw: (context: any, globalObj: GlobalEnv) => void = () => { }		  // 绘制
+  update: (globalObj: GlobalEnv) => void = () => { }                  // Update parameter information
+  draw: (context: any, globalObj: GlobalEnv) => void = () => { }		  // draw
 }
 
 export class LogoItem extends Item {
@@ -172,14 +172,14 @@ export class PlayerItem extends Item {
         }
       } else {
         if (!this._stage.BeanMap.get(this.coord.x, this.coord.y)) {
-          // 吃豆
+          // eat pacman
           globalObj.SCORE++
           this._stage.BeanMap.set(this.coord.x, this.coord.y, 1)
-          // 吃到能量豆
+          // eat energy beans
           if (this._stage.CONFIG.goods.includes(`${this.coord.x},${this.coord.y}`)) {
             this._stage.NPCs.forEach((item: Item) => {
               if (item.status === 1) {
-                // 如果NPC为正常状态，则置为临时状态
+                // If the NPC is in a normal state, set it to a temporary state
                 item.timeout = 450
                 item.status = 3
               }
@@ -257,14 +257,14 @@ export class NpcItem extends Item {
       if (this.status === 3 && !this.timeout) {
         this.status = 1
       }
-      // 到达坐标中心时计算
+      // Calculated when reaching the coordinate center
       if (!this.coord.offset) {
         if (this.status === 1) {
-          // 定时器
+          // timer
           if (!this.timeout) {
             newMap = JSON.parse(JSON.stringify(this._stage.BaseMap.data).replace(/2/g, '0'))
             this._stage.NPCs.forEach((item: Item) => {
-              // NPC将其它所有还处于正常状态的NPC当成一堵墙
+              // NPC treats all other NPCs in normal state as a wall
               if (item._id !== this._id && item.status === 1) {
                 newMap[item.coord.y][item.coord.x] = 1
               }
@@ -307,7 +307,7 @@ export class NpcItem extends Item {
             this.status = 1
           }
         }
-        // 是否转变方向
+        // whether to change direction
         if (this.vector.change) {
           this.coord.x = this.vector.x
           this.coord.y = this.vector.y
@@ -315,7 +315,7 @@ export class NpcItem extends Item {
           this.x = pos.x
           this.y = pos.y
         }
-        // 方向判定
+        // direction determination
         if (this.vector.x > this.coord.x) {
           this.orientation = 0
         } else if (this.vector.x < this.coord.x) {
