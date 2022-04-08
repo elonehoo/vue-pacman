@@ -73,8 +73,85 @@ function initStages(){
     e.preventDefault()
   })
 }
-
-
+function initSplashStage(){
+  const stage = new SplashStage({
+    index: stages.value.length
+  })
+  stage.createItem('logo',{
+    x: WIDTH.value / 2,
+    y: HEIGHT.value * .45,
+    width: 100,
+    height:100,
+    frames: 3
+  })
+  stage.createItem('name',{
+    x: WIDTH.value / 2,
+    y: HEIGHT.value * .6
+  })
+  stages.value.push(stage)
+}
+function initMainStage(){
+  MAP_DATA.forEach((config:any)=>{
+    const stage = new GameStage({
+      index: stages.value.length,
+      CONFIG:config
+    })
+    stage.BaseMap = stage.createMap('base',{
+      x: 60,
+      y: 10,
+      data:config.map,
+      cache: true
+    })
+    stage.BeanMap = stage.createMap('bean',{
+      x: 60,
+      y: 10,
+      data:config.map,
+      frames: 8
+    })
+    stage.createItem('score_level', {
+      x: 690,
+      y: 80
+    })
+    stage.createItem('status', {
+      x: 690,
+      y: 285,
+      frames: 25
+    })
+    stage.createItem('life', {
+      x: 705,
+      y: 510,
+      width: 30,
+      height: 30
+    })
+    for(let i = 0 ; i < globalObj.value.NPC_COUNT; i++){
+      const npcItem = stage.createItem('npc',{
+        width: 30,
+        height:30,
+        color: globalObj.value.COLOR[i],
+        location: stage.BeanMap,
+        coord:{x: 12 + i,y: 14},
+        vector:{ x: 12 + i, y: 14 },
+        orientation: 3,
+        type: 2,
+        speed: 1,
+        frames: 10,
+        timeout: Math.floor(Math.random() * 120)
+      })
+      stage.NPCs.push(npcItem)
+    }
+    stage.PLAYER = stage.createItem('player',{
+      width: 30,
+      height: 30,
+      location: stage.BaseMap,
+      coord: { x: 13.5, y: 23 },
+      orientation: 2,
+      type: 1,
+      speed: 2,
+      frames: 10
+    })
+    stages.value.push(stage)
+  })
+}
 </script>
 
 <template>
