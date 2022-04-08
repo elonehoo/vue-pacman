@@ -29,6 +29,7 @@ const globalObj = ref({
 onMounted(()=>{
   initCanvas()
   initStages()
+  startAnimate()
 })
 
 function initCanvas(){
@@ -151,6 +152,93 @@ function initMainStage(){
     })
     stages.value.push(stage)
   })
+}
+
+function initEndStage(){
+  const stage = new SplashStage({
+    index: stages.value.length
+  })
+  stage.createItem('over',{
+    x: WIDTH.value / 2,
+    y: HEIGHT.value * .35
+  })
+  stage.createItem('final_score',{
+    x: WIDTH.value / 2,
+    y: HEIGHT.value * .5
+  })
+  stages.value.push(stage)
+}
+function setStage(index:number){
+  currentIndex.value = index
+  stages.value[index].reset()
+}
+function nextStage(){
+  if(currentIndex.value < stages.value.length){
+    setStage(++currentIndex.value)
+  }else{
+    setStage(0)
+  }
+}
+function startAnimate(){
+  const stage = stages.value[currentIndex.value]
+  drawCanvas()
+  currentFrame.value++
+  if(stage.timeout){
+    stage.timeout--
+  }
+  const result = stage.update(globalObj.value)
+  if(result !== false){
+    if(result){
+      nextStage()
+    }
+    stage.maps.foreach((map:Map)=>{
+      if(!(currentFrame.value % map.frames)){
+        map.times = currentFrame.value / map.frames
+      }
+      if(map.cache){
+        if(!map.imageData){
+          $context.value.save()
+          map.draw($context.value,globalObj.value)
+          map.imageData = $context.value.getImageData(0,0,WIDTH.value,HEIGHT.value)
+          $context.value.restore()
+        }else{
+          $context.value.putImageData(map.imageData, 0, 0)
+        }
+      }else{
+        map.draw($context.value, globalObj.value)
+      }
+    })
+    stage.items.foreach((item:Item)=>{
+      if(!(currentFrame.value % item.frames)){
+        item.times = currentFrame.value / item.frames
+      }
+      if(stage.status === 1 && item.status !== 2){
+        if(item.location){
+          item.coord = item.location.position2coord(item.x, item.y)
+        }
+        if(item.timeout){
+          item.timeout--
+        }
+        item.update(globalObj.value)
+      }
+      item.draw($context.value, globalObj.value)
+    })
+  }else{
+    gameOver()
+  }
+  handler.value = requestAnimationFrame(startAnimate)
+}
+function drawCanvas(){
+  $context.value.clearRect(0,0,WIDTH.value,HEIGHT.value)
+  $context.value.fillStyle = '#000'
+  $context.value.fillRect(0,0,WIDTH.value,HEIGHT.value)
+}
+function stopAnimate(){
+  if (handler.value) { cancelAnimationFrame(handler.value) }
+}
+function gameOver(){
+  setStage(stages.value.length - 1)
+  stopAnimate()
 }
 </script>
 
