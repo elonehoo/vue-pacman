@@ -7,5 +7,5 @@ Vue Pacman
 </h1>
 
 <h6 align='center'>
-<a href="#">Live Demo</a>
+<a href="https://pacman.elonehoo.xyz/">Live Demo</a>
 </h6>
