@@ -150,7 +150,7 @@ function initMainStage(){
       speed: 2,
       frames: 10
     })
-    stages.value.push(stage)
+      stages.value.push(stage)
   })
 }
 
