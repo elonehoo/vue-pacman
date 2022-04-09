@@ -1,146 +1,151 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import {CANVAS_WIDTH,CANVAS_HEIGHT,MAP_DATA} from '~/util/Constant'
-import {GlobalEnv} from '~/util/Interfaces'
-import {getCanvasElementById,getCanvasRenderingContext2D} from '~/util/Utils'
-import {Stage,SplashStage,GameStage,EndStage} from '~/methods/Stage'
-import { Map,BaseMap,BeanMap } from '~/methods/Map'
-import { Item,LogoItem,NameItem,ScoreLevelItem,StatusItem,LifeItem,PlayerItem,NpcItem} from '~/methods/Item'
+import { onMounted, reactive } from 'vue'
+import { CANVAS_HEIGHT, CANVAS_WIDTH, MAP_DATA } from '~/util/Constant'
+import { GlobalEnv } from '~/util/Interfaces'
+import { getCanvasElementById, getCanvasRenderingContext2D } from '~/util/Utils'
+import type { Stage } from '~/methods/Stage'
+import { EndStage, GameStage, SplashStage } from '~/methods/Stage'
+import type { Map } from '~/methods/Map'
+import { BaseMap, BeanMap } from '~/methods/Map'
+import type { Item } from '~/methods/Item'
+import { LifeItem, LogoItem, NameItem, NpcItem, PlayerItem, ScoreLevelItem, StatusItem } from '~/methods/Item'
 
 const $canvas = ref()
 const $context = ref()
 const WIDTH = ref(CANVAS_WIDTH)
 const HEIGHT = ref(CANVAS_HEIGHT)
-const stages = ref()
+const stages: Stage[] = reactive([])
 const currentIndex = ref(0)
-  // animation variable
+// animation variable
 const currentFrame = ref(0)
 const handler = ref(0)
-  // global variable
+// global variable
 const globalObj = ref({
-  COLOR: ['#F00', '#F93', '#0CF', '#F9C'],  // NPC color
+  COLOR: ['#F00', '#F93', '#0CF', '#F9C'], // NPC color
   COS: [1, 0, -1, 0],
   SIN: [0, 1, 0, -1],
   SCORE: 0,
   LIFE: 5,
-  NPC_COUNT: 4
+  NPC_COUNT: 4,
 })
 
-onMounted(()=>{
+onMounted(() => {
   initCanvas()
   initStages()
   startAnimate()
 })
 
-function initCanvas(){
+function initCanvas() {
   $canvas.value = getCanvasElementById('canvas')
   $canvas.value.width = WIDTH.value
   $canvas.value.height = HEIGHT.value
   $context.value = getCanvasRenderingContext2D($canvas.value)
 }
 
-function initStages(){
+function initStages() {
   initSplashStage()
   initMainStage()
   initEndStage()
-  window.addEventListener('keydown',(e)=>{
-    switch(e.keyCode){
-      case 13: //enter
-      case 32: //space
-        if(currentIndex.value === 0){
+  window.addEventListener('keydown', (e) => {
+    switch (e.keyCode) {
+      case 13: // enter
+      case 32: // space
+        if (currentIndex.value === 0) {
           nextStage()
-        }else if(currentIndex.value === stages.value.length - 1){
+        }
+        else if (currentIndex.value === stages.length - 1) {
           globalObj.value.SCORE = 0
           globalObj.value.LIFE = 5
           nextStage()
-        }else{
-          const STATUS = stages.value[currentIndex.value].status
-          stages.value[currentIndex.value].status = STATUS === 2 ? 1 : 2
+        }
+        else {
+          const STATUS = stages[currentIndex.value].status
+          stages[currentIndex.value].status = STATUS === 2 ? 1 : 2
         }
         break
-      case 39: //right
-        stages.value[currentIndex.value].PLAYER.control = {orientation:0}
+      case 39: // right
+        stages[currentIndex.value].PLAYER.control = { orientation: 0 }
         break
-      case 40: //down
-        stages.value[currentIndex.value].PLAYER.control = {orientation:1}
+      case 40: // down
+        stages[currentIndex.value].PLAYER.control = { orientation: 1 }
         break
-      case 37: //left
-        stages.value[currentIndex.value].PLAYER.control = {orientation:2}
+      case 37: // left
+        stages[currentIndex.value].PLAYER.control = { orientation: 2 }
         break
-      case 38: //up
-        stages.value[currentIndex.value].PLAYER.control = {orientation:3}
+      case 38: // up
+        stages[currentIndex.value].PLAYER.control = { orientation: 3 }
         break
     }
     e.preventDefault()
   })
 }
-function initSplashStage(){
+function initSplashStage() {
   const stage = new SplashStage({
-    index: stages.value ? stages.value.length : 0,
+    index: stages ? stages.length : 0,
   })
-  stage.createItem('logo',{
+  stage.createItem('logo', {
     x: WIDTH.value / 2,
-    y: HEIGHT.value * .45,
+    y: HEIGHT.value * 0.45,
     width: 100,
-    height:100,
-    frames: 3
+    height: 100,
+    frames: 3,
   })
-  stage.createItem('name',{
+  stage.createItem('name', {
     x: WIDTH.value / 2,
-    y: HEIGHT.value * .6
+    y: HEIGHT.value * 0.6,
   })
-  stages.value.push(stage)
+  stages.push(stage)
 }
-function initMainStage(){
-  MAP_DATA.forEach((config:any)=>{
+function initMainStage() {
+  MAP_DATA.forEach((config: any) => {
     const stage = new GameStage({
-      index: stages.value.length,
-      CONFIG:config
+      index: stages.length,
+      CONFIG: config,
     })
-    stage.BaseMap = stage.createMap('base',{
+    stage.BaseMap = stage.createMap('base', {
       x: 60,
       y: 10,
-      data:config.map,
-      cache: true
+      data: config.map,
+      cache: true,
     })
-    stage.BeanMap = stage.createMap('bean',{
+    stage.BeanMap = stage.createMap('bean', {
       x: 60,
       y: 10,
-      data:config.map,
-      frames: 8
+      data: config.map,
+      frames: 8,
     })
     stage.createItem('score_level', {
       x: 690,
-      y: 80
+      y: 80,
     })
     stage.createItem('status', {
       x: 690,
       y: 285,
-      frames: 25
+      frames: 25,
     })
     stage.createItem('life', {
       x: 705,
       y: 510,
       width: 30,
-      height: 30
+      height: 30,
     })
-    for(let i = 0 ; i < globalObj.value.NPC_COUNT; i++){
-      const npcItem = stage.createItem('npc',{
+    for (let i = 0; i < globalObj.value.NPC_COUNT; i++) {
+      const npcItem = stage.createItem('npc', {
         width: 30,
-        height:30,
+        height: 30,
         color: globalObj.value.COLOR[i],
         location: stage.BeanMap,
-        coord:{x: 12 + i,y: 14},
-        vector:{ x: 12 + i, y: 14 },
+        coord: { x: 12 + i, y: 14 },
+        vector: { x: 12 + i, y: 14 },
         orientation: 3,
         type: 2,
         speed: 1,
         frames: 10,
-        timeout: Math.floor(Math.random() * 120)
+        timeout: Math.floor(Math.random() * 120),
       })
       stage.NPCs.push(npcItem)
     }
-    stage.PLAYER = stage.createItem('player',{
+    stage.PLAYER = stage.createItem('player', {
       width: 30,
       height: 30,
       location: stage.BaseMap,
@@ -148,103 +153,106 @@ function initMainStage(){
       orientation: 2,
       type: 1,
       speed: 2,
-      frames: 10
+      frames: 10,
     })
-      stages.value.push(stage)
+    stages.push(stage)
   })
 }
 
-function initEndStage(){
+function initEndStage() {
   const stage = new SplashStage({
-    index: stages.value.length
+    index: stages.length,
   })
-  stage.createItem('over',{
+  stage.createItem('over', {
     x: WIDTH.value / 2,
-    y: HEIGHT.value * .35
+    y: HEIGHT.value * 0.35,
   })
-  stage.createItem('final_score',{
+  stage.createItem('final_score', {
     x: WIDTH.value / 2,
-    y: HEIGHT.value * .5
+    y: HEIGHT.value * 0.5,
   })
-  stages.value.push(stage)
+  stages.push(stage)
 }
-function setStage(index:number){
+function setStage(index: number) {
   currentIndex.value = index
-  stages.value[index].reset()
+  stages[index].reset()
 }
-function nextStage(){
-  if(currentIndex.value < stages.value.length){
+function nextStage() {
+  if (currentIndex.value < stages.length)
     setStage(++currentIndex.value)
-  }else{
+
+  else
     setStage(0)
-  }
 }
-function startAnimate(){
-  const stage = stages.value[currentIndex.value]
+function startAnimate() {
+  const stage: Stage = stages[currentIndex.value]
   drawCanvas()
   currentFrame.value++
-  if(stage.timeout){
+  if (stage.timeout) {
     stage.timeout--
   }
   const result = stage.update(globalObj.value)
-  if(result !== false){
-    if(result){
+  if (result !== false) {
+    if (result)
       nextStage()
-    }
-    stage.maps.foreach((map:Map)=>{
-      if(!(currentFrame.value % map.frames)){
+
+    stage.maps.forEach((map: Map) => {
+      if (!(currentFrame.value % map.frames))
         map.times = currentFrame.value / map.frames
-      }
-      if(map.cache){
-        if(!map.imageData){
+
+      if (map.cache) {
+        if (!map.imageData) {
           $context.value.save()
-          map.draw($context.value,globalObj.value)
-          map.imageData = $context.value.getImageData(0,0,WIDTH.value,HEIGHT.value)
+          map.draw($context.value, globalObj.value)
+          map.imageData = $context.value.getImageData(0, 0, WIDTH.value, HEIGHT.value)
           $context.value.restore()
-        }else{
+        }
+        else {
           $context.value.putImageData(map.imageData, 0, 0)
         }
-      }else{
+      }
+      else {
         map.draw($context.value, globalObj.value)
       }
     })
-    stage.items.foreach((item:Item)=>{
-      if(!(currentFrame.value % item.frames)){
+    stage.items.forEach((item: Item) => {
+      if (!(currentFrame.value % item.frames))
         item.times = currentFrame.value / item.frames
-      }
-      if(stage.status === 1 && item.status !== 2){
-        if(item.location){
+
+      if (stage.status === 1 && item.status !== 2) {
+        if (item.location)
           item.coord = item.location.position2coord(item.x, item.y)
-        }
-        if(item.timeout){
+
+        if (item.timeout) {
           item.timeout--
         }
         item.update(globalObj.value)
       }
       item.draw($context.value, globalObj.value)
     })
-  }else{
+  }
+  else {
     gameOver()
   }
   handler.value = requestAnimationFrame(startAnimate)
 }
-function drawCanvas(){
-  $context.value.clearRect(0,0,WIDTH.value,HEIGHT.value)
+function drawCanvas() {
+  $context.value.clearRect(0, 0, WIDTH.value, HEIGHT.value)
   $context.value.fillStyle = '#000'
-  $context.value.fillRect(0,0,WIDTH.value,HEIGHT.value)
+  $context.value.fillRect(0, 0, WIDTH.value, HEIGHT.value)
 }
-function stopAnimate(){
-  if (handler.value) { cancelAnimationFrame(handler.value) }
+function stopAnimate() {
+  if (handler.value) cancelAnimationFrame(handler.value)
 }
-function gameOver(){
-  setStage(stages.value.length - 1)
+function gameOver() {
+  setStage(stages.length - 1)
   stopAnimate()
 }
 </script>
 
 <template>
   <div class="pac-man">
-    <canvas id="canvas" class="canvas"></canvas>
+    <canvas id="canvas" class="canvas" />
   </div>
 </template>
 
@@ -267,4 +275,3 @@ function gameOver(){
   color: #fff;
 }
 </style>
-
