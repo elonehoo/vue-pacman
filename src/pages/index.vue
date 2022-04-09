@@ -251,27 +251,46 @@ function gameOver() {
 </script>
 
 <template>
-  <div class="pac-man">
-    <canvas id="canvas" class="canvas" />
-  </div>
+  <div class="wrapper">
+			<div class="mod-game">
+				<canvas id="canvas" class="canvas" width="960" height="640">不支持画布</canvas>
+				<div class="info">
+					<p>Press [space/enter] to pause or continue</p>
+          <p>[←↑↓→] to move</p>
+				</div>
+			</div>
+		</div>
 </template>
 
 <style scoped lang="scss">
-.pac-man {
-  position: relative;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.btn {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  height: 50px;
-  z-index: 10;
-  background: #14517a;
-  font-size: 30px;
-  color: #fff;
-}
+*{padding:0;margin:0;}
+			.wrapper{
+				width: 960px;
+				margin:0 auto;
+				color:#999;
+			}
+			canvas{display:block;background: #000;}
+			.mod-game .info{
+				padding: 10px 0;
+				margin-bottom: 5px;
+				line-height: 20px;
+				text-align: center;
+				color: #666;
+			}
+			.mod-game .info p{
+				line-height: 20px;
+				font-size: 14px;
+				color: #666;
+			}
+			.mod-game .intro{
+				padding: 10px 15px;
+				background: #f8f8f8;
+				border-radius: 5px;
+			}
+			.mod-game .intro p{
+				line-height: 22px;
+				text-indent: 2em;
+				font-size: 14px;
+				color: #666;
+			}
 </style>
