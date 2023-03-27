@@ -1,6 +1,6 @@
 {
   "private": true,
-  "packageManager": "pnpm@6.35.1",
+  "packageManager": "pnpm@7.30.5",
   "scripts": {
     "build": "vite build",
     "dev": "vite --port 3333 --open",
