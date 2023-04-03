@@ -15,14 +15,14 @@
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.37.0",
+    "@antfu/eslint-config": "^0.38.2",
     "@iconify-json/carbon": "^1.1.16",
-    "@types/node": "^18.15.10",
+    "@types/node": "^18.15.11",
     "@vitejs/plugin-vue": "^4.1.0",
     "@vue/test-utils": "^2.3.2",
-    "eslint": "^8.36.0",
+    "eslint": "^8.37.0",
     "jsdom": "^21.1.1",
-    "pnpm": "^7.30.3",
+    "pnpm": "^7.30.5",
     "sass": "^1.60.0",
     "typescript": "^4.9.5",
     "unocss": "^0.50.6",
@@ -30,7 +30,7 @@
     "unplugin-vue-components": "^0.24.1",
     "vite": "^4.2.1",
     "vite-plugin-pages": "^0.29.0",
-    "vitest": "^0.29.7",
+    "vitest": "^0.29.8",
     "vue-tsc": "^1.2.0"
   },
   "eslintConfig": {
