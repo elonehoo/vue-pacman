@@ -18,7 +18,7 @@
     "@antfu/eslint-config": "^0.43.1",
     "@iconify-json/carbon": "^1.1.30",
     "@types/node": "^18.19.16",
-    "@vitejs/plugin-vue": "^4.6.2",
+    "@vitejs/plugin-vue": "^5.2.1",
     "@vue/test-utils": "^2.4.4",
     "eslint": "^8.56.0",
     "jsdom": "^21.1.2",
