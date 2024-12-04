@@ -1,36 +1,37 @@
-import { GlobalEnv, Coord, Vector } from '~/util/Interfaces'
-import { Stage } from './Stage'
-import { BaseMap } from './Map'
+import type { BaseMap } from './Map'
+import type { Stage } from './Stage'
+import type { Coord, GlobalEnv, Vector } from '~/util/Interfaces'
 
 export class Item {
   _params: any
   _id: number = 0
   _stage!: Stage
-  x: number = 0				           	                                    // Position coordinate: abscissa
-  y: number = 0					                                              // Position coordinate: ordinate
-  width: number = 20				                                          // width
-  height: number = 20				                                          // height
-  type: number = 0					                                          // Object type, 0 means normal object (not bound to the map), 1 means player control object, 2 means program control object
-  color: string = '#F00'			                                        // Logo color
-  status: number = 1			       	                                    // Object status, 0 means inactive/finished, 1 means normal, 2 means paused, 3 means temporary, 4 means abnormal
-  orientation: number = 0			                                        // Current positioning direction, 0 means right, 1 means down, 2 means left, 3 means up
-  speed: number = 0				                                            // Moving speed
+  x: number = 0 // Position coordinate: abscissa
+  y: number = 0 // Position coordinate: ordinate
+  width: number = 20 // width
+  height: number = 20 // height
+  type: number = 0 // Object type, 0 means normal object (not bound to the map), 1 means player control object, 2 means program control object
+  color: string = '#F00' // Logo color
+  status: number = 1 // Object status, 0 means inactive/finished, 1 means normal, 2 means paused, 3 means temporary, 4 means abnormal
+  orientation: number = 0 // Current positioning direction, 0 means right, 1 means down, 2 means left, 3 means up
+  speed: number = 0 // Moving speed
   // map related
-  location!: BaseMap       			                                      // Location map, Map object
-  coord!: Coord		       		                                          // If the object is bound to the map, set the map coordinates; if not, set the location coordinates
-  vector!: Vector	       		                                          // target coordinates
-  path!: Vector[]			       	                                        // NPC auto-walking path
+  location!: BaseMap // Location map, Map object
+  coord!: Coord // If the object is bound to the map, set the map coordinates; if not, set the location coordinates
+  vector!: Vector // target coordinates
+  path!: Vector[] // NPC auto-walking path
   // layout related
-  frames: number = 1				                                          // Speed level, how many frames change in internal calculator times
-  times: number = 0				                                            // Refresh canvas count (for loop animation state judgment)
-  timeout: number = 0				                                          // Countdown (for process animation state judgment)
-  control: any = {}				                                            // Control the cache and process it when the anchor point is reached
+  frames: number = 1 // Speed level, how many frames change in internal calculator times
+  times: number = 0 // Refresh canvas count (for loop animation state judgment)
+  timeout: number = 0 // Countdown (for process animation state judgment)
+  control: any = {} // Control the cache and process it when the anchor point is reached
   constructor(params: {} = {}) {
     this._params = params
     Object.assign(this, this._params)
   }
-  update: (globalObj: GlobalEnv) => void = () => { }                  // Update parameter information
-  draw: (context: any, globalObj: GlobalEnv) => void = () => { }		  // draw
+
+  update: (globalObj: GlobalEnv) => void = () => { } // Update parameter information
+  draw: (context: any, globalObj: GlobalEnv) => void = () => { } // draw
 }
 
 export class LogoItem extends Item {
@@ -40,7 +41,7 @@ export class LogoItem extends Item {
       const t = Math.abs(5 - this.times % 10)
       context.fillStyle = '#FFE600'
       context.beginPath()
-      context.arc(this.x, this.y, this.width / 2, t * .04 * Math.PI, (2 - t * .04) * Math.PI, false)
+      context.arc(this.x, this.y, this.width / 2, t * 0.04 * Math.PI, (2 - t * 0.04) * Math.PI, false)
       context.lineTo(this.x, this.y)
       context.closePath()
       context.fill()
@@ -56,7 +57,7 @@ export class LogoItem extends Item {
 export class NameItem extends Item {
   constructor(options: {}) {
     super(options)
-    this.draw = (context: any, globalObj: GlobalEnv) => {
+    this.draw = (context: any, _globalObj: GlobalEnv) => {
       context.font = 'bold 42px Helvetica'
       context.textAlign = 'center'
       context.textBaseline = 'middle'
@@ -97,7 +98,7 @@ export class ScoreLevelItem extends Item {
 export class StatusItem extends Item {
   constructor(options: {}) {
     super(options)
-    this.draw = (context: any, globalObj: GlobalEnv) => {
+    this.draw = (context: any, _globalObj: GlobalEnv) => {
       if (this._stage.status === 2 && this.times % 2) {
         context.font = '24px Helvetica'
         context.textAlign = 'left'
@@ -126,7 +127,7 @@ export class LifeItem extends Item {
       context.textAlign = 'left'
       context.textBaseline = 'bottom'
       context.fillStyle = '#FFF'
-      context.fillText('X ' + (globalObj.LIFE), this.x - 15, this.y + 56)
+      context.fillText(`X ${globalObj.LIFE}`, this.x - 15, this.y + 56)
     }
   }
 }
@@ -134,21 +135,26 @@ export class LifeItem extends Item {
 export class PlayerItem extends Item {
   constructor(options: {}) {
     super(options)
-    this.draw = (context: any, globalObj: GlobalEnv) => {
+    this.draw = (context: any, _globalObj: GlobalEnv) => {
       context.fillStyle = '#FFE600'
       context.beginPath()
       if (this._stage.status !== 3) {
         if (this.times % 2) {
           context.arc(this.x, this.y, this.width / 2, (0.5 * this.orientation + 0.20) * Math.PI, (0.5 * this.orientation - 0.20) * Math.PI, false)
-        } else {
+        }
+        else {
           context.arc(this.x, this.y, this.width / 2, (0.5 * this.orientation + 0.01) * Math.PI, (0.5 * this.orientation - 0.01) * Math.PI, false)
         }
-      } else if (this._stage.timeout) {
+      }
+      else if (this._stage.timeout) {
         context.arc(
-          this.x, this.y,
-          this.width / 2, (.5 * this.orientation + 1 - .02 * this._stage.timeout) * Math.PI,
-          (.5 * this.orientation - 1 + .02 * this._stage.timeout) * Math.PI,
-          false)
+          this.x,
+          this.y,
+          this.width / 2,
+          (0.5 * this.orientation + 1 - 0.02 * this._stage.timeout) * Math.PI,
+          (0.5 * this.orientation - 1 + 0.02 * this._stage.timeout) * Math.PI,
+          false,
+        )
       }
       context.lineTo(this.x, this.y)
       context.closePath()
@@ -166,11 +172,13 @@ export class PlayerItem extends Item {
         if (value === 0) {
           this.x += this.speed * globalObj.COS[this.orientation]
           this.y += this.speed * globalObj.SIN[this.orientation]
-        } else if (value < 0) {
+        }
+        else if (value < 0) {
           this.x -= this._stage.BaseMap.size * (this._stage.BaseMap.xLength - 1) * globalObj.COS[this.orientation]
           this.y -= this._stage.BaseMap.size * (this._stage.BaseMap.yLength - 1) * globalObj.SIN[this.orientation]
         }
-      } else {
+      }
+      else {
         if (!this._stage.BeanMap.get(this.coord.x, this.coord.y)) {
           // eat pacman
           globalObj.SCORE++
@@ -199,7 +207,7 @@ export class NpcItem extends Item {
     this.draw = (context: any, globalObj: GlobalEnv) => {
       let isSick = false
       if (this.status === 3) {
-        isSick = this.timeout > 80 || this.times % 2 ? true : false
+        isSick = !!(this.timeout > 80 || this.times % 2)
       }
       if (this.status !== 4) {
         // Draw Body
@@ -208,15 +216,15 @@ export class NpcItem extends Item {
         context.arc(this.x, this.y, this.width / 2, 0, Math.PI, true)
         switch (this.times % 2) {
           case 0:
-            context.lineTo(this.x - this.width * .5, this.y + this.height * .4)
-            context.quadraticCurveTo(this.x - this.width * .4, this.y + this.height * .5, this.x - this.width * .2, this.y + this.height * .3)
-            context.quadraticCurveTo(this.x, this.y + this.height * .5, this.x + this.width * .2, this.y + this.height * .3)
-            context.quadraticCurveTo(this.x + this.width * .4, this.y + this.height * .5, this.x + this.width * .5, this.y + this.height * .4)
+            context.lineTo(this.x - this.width * 0.5, this.y + this.height * 0.4)
+            context.quadraticCurveTo(this.x - this.width * 0.4, this.y + this.height * 0.5, this.x - this.width * 0.2, this.y + this.height * 0.3)
+            context.quadraticCurveTo(this.x, this.y + this.height * 0.5, this.x + this.width * 0.2, this.y + this.height * 0.3)
+            context.quadraticCurveTo(this.x + this.width * 0.4, this.y + this.height * 0.5, this.x + this.width * 0.5, this.y + this.height * 0.4)
             break
           case 1:
-            context.lineTo(this.x - this.width * .5, this.y + this.height * .3)
-            context.quadraticCurveTo(this.x - this.width * .25, this.y + this.height * .5, this.x, this.y + this.height * .3)
-            context.quadraticCurveTo(this.x - this.width * .25, this.y + this.height * .5, this.x + this.width * .5, this.y + this.height * .3)
+            context.lineTo(this.x - this.width * 0.5, this.y + this.height * 0.3)
+            context.quadraticCurveTo(this.x - this.width * 0.25, this.y + this.height * 0.5, this.x, this.y + this.height * 0.3)
+            context.quadraticCurveTo(this.x - this.width * 0.25, this.y + this.height * 0.5, this.x + this.width * 0.5, this.y + this.height * 0.3)
             break
         }
         context.fill()
@@ -226,28 +234,37 @@ export class NpcItem extends Item {
       if (isSick) {
         // Draw Eyeball
         context.beginPath()
-        context.arc(this.x - this.width * .15, this.y - this.height * .21, this.width * .08, 0, 2 * Math.PI, false)
-        context.arc(this.x + this.width * .15, this.y - this.height * .21, this.width * .08, 0, 2 * Math.PI, false)
+        context.arc(this.x - this.width * 0.15, this.y - this.height * 0.21, this.width * 0.08, 0, 2 * Math.PI, false)
+        context.arc(this.x + this.width * 0.15, this.y - this.height * 0.21, this.width * 0.08, 0, 2 * Math.PI, false)
         context.fill()
         context.closePath()
-      } else {
+      }
+      else {
         // Draw Eyeball
         context.beginPath()
-        context.arc(this.x - this.width * .15, this.y - this.height * .21, this.width * .12, 0, 2 * Math.PI, false)
-        context.arc(this.x + this.width * .15, this.y - this.height * .21, this.width * .12, 0, 2 * Math.PI, false)
+        context.arc(this.x - this.width * 0.15, this.y - this.height * 0.21, this.width * 0.12, 0, 2 * Math.PI, false)
+        context.arc(this.x + this.width * 0.15, this.y - this.height * 0.21, this.width * 0.12, 0, 2 * Math.PI, false)
         context.fill()
         context.closePath()
         // Draw Pupil
         context.fillStyle = '#000'
         context.beginPath()
         context.arc(
-          this.x - this.width * (.15 - .04 * globalObj.COS[this.orientation]),
-          this.y - this.height * (.21 - .04 * globalObj.SIN[this.orientation]),
-          this.width * .07, 0, 2 * Math.PI, false)
+          this.x - this.width * (0.15 - 0.04 * globalObj.COS[this.orientation]),
+          this.y - this.height * (0.21 - 0.04 * globalObj.SIN[this.orientation]),
+          this.width * 0.07,
+          0,
+          2 * Math.PI,
+          false,
+        )
         context.arc(
-          this.x + this.width * (.15 + .04 * globalObj.COS[this.orientation]),
-          this.y - this.height * (.21 - .04 * globalObj.SIN[this.orientation]),
-          this.width * .07, 0, 2 * Math.PI, false)
+          this.x + this.width * (0.15 + 0.04 * globalObj.COS[this.orientation]),
+          this.y - this.height * (0.21 - 0.04 * globalObj.SIN[this.orientation]),
+          this.width * 0.07,
+          0,
+          2 * Math.PI,
+          false,
+        )
         context.fill()
         context.closePath()
       }
@@ -272,13 +289,14 @@ export class NpcItem extends Item {
             this.path = this._stage.BaseMap.finder({
               map: newMap,
               start: this.coord,
-              end: this._stage.PLAYER.coord
+              end: this._stage.PLAYER.coord,
             })
             if (this.path.length) {
               this.vector = this.path[0]
             }
           }
-        } else if (this.status === 3) {
+        }
+        else if (this.status === 3) {
           newMap = JSON.parse(JSON.stringify(this._stage.BaseMap.data).replace(/2/g, '0'))
           this._stage.NPCs.forEach((item: Item) => {
             if (item._id !== this._id) {
@@ -289,21 +307,23 @@ export class NpcItem extends Item {
             map: newMap,
             start: this._stage.PLAYER.coord,
             end: this.coord,
-            type: 'next'
+            type: 'next',
           })
           if (this.path.length) {
             this.vector = this.path[Math.floor(Math.random() * this.path.length)]
           }
-        } else if (this.status === 4) {
+        }
+        else if (this.status === 4) {
           newMap = JSON.parse(JSON.stringify(this._stage.BaseMap.data).replace(/2/g, '0'))
           this.path = this._stage.BaseMap.finder({
             map: newMap,
             start: this.coord,
-            end: this._params.coord
+            end: this._params.coord,
           })
           if (this.path.length) {
             this.vector = this.path[0]
-          } else {
+          }
+          else {
             this.status = 1
           }
         }
@@ -318,11 +338,14 @@ export class NpcItem extends Item {
         // direction determination
         if (this.vector.x > this.coord.x) {
           this.orientation = 0
-        } else if (this.vector.x < this.coord.x) {
+        }
+        else if (this.vector.x < this.coord.x) {
           this.orientation = 2
-        } else if (this.vector.y > this.coord.y) {
+        }
+        else if (this.vector.y > this.coord.y) {
           this.orientation = 1
-        } else if (this.vector.y < this.coord.y) {
+        }
+        else if (this.vector.y < this.coord.y) {
           this.orientation = 3
         }
       }
@@ -353,7 +376,7 @@ export class FinalScoreItem extends Item {
       context.font = '20px Helvetica'
       context.textAlign = 'center'
       context.textBaseline = 'middle'
-      context.fillText('FINAL SCORE: ' + (globalObj.SCORE + 50 * Math.max(globalObj.LIFE - 1, 0)), this.x, this.y)
+      context.fillText(`FINAL SCORE: ${globalObj.SCORE + 50 * Math.max(globalObj.LIFE - 1, 0)}`, this.x, this.y)
     }
   }
 }

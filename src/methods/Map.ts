@@ -1,56 +1,61 @@
-import { GlobalEnv, Vector } from '~/util/Interfaces'
-import { Stage } from './Stage'
+import type { Stage } from './Stage'
+import type { GlobalEnv, Vector } from '~/util/Interfaces'
 
 export class Map {
   _params: any
   _stage!: Stage
-  x: number = 0				           	                                // The coordinates of the starting point of the map
-  y: number = 0					                                          // The coordinates of the starting point of the map
-  size: number = 20       				                                // width of map cells
-  data: any[] = []                                                // map data
-  xLength: number = 0				                                      // 2D array x-axis length
-  yLength: number = 0			      	                                // 2D array y-axis length
+  x: number = 0 // The coordinates of the starting point of the map
+  y: number = 0 // The coordinates of the starting point of the map
+  size: number = 20 // width of map cells
+  data: any[] = [] // map data
+  xLength: number = 0 // 2D array x-axis length
+  yLength: number = 0 // 2D array y-axis length
   // layout related
-  frames: number = 1				                                      // Speed level, how many frames change in internal calculator times
-  times: number = 0				                                        // Refresh canvas count (for loop animation state judgment)
-  cache: boolean = false		                                      // Whether it is static (if static, set the cache)
+  frames: number = 1 // Speed level, how many frames change in internal calculator times
+  times: number = 0 // Refresh canvas count (for loop animation state judgment)
+  cache: boolean = false // Whether it is static (if static, set the cache)
   imageData!: ImageData | null
-  constructor(params: {} = {}) {
+  constructor(params: any = {}) {
     this._params = params
     Object.assign(this, this._params)
   }
-  update: () => void = () => { } 	                                // Update map data
-  draw: (context: any, globalObj: GlobalEnv) => void = () => { }  // draw
+
+  update: () => void = () => { } // Update map data
+  draw: (context: any, globalObj: GlobalEnv) => void = () => { } // draw
   get(px: number, py: number) {
     if (this.data[py] && typeof this.data[py][px] !== 'undefined') {
       return this.data[py][px]
     }
     return -1
   }
+
   set(x: number, y: number, value: number) {
     if (this.data[y]) { this.data[y][x] = value }
   }
+
   coord2position(cx: number, cy: number) {
     return {
       x: this.x + cx * this.size + this.size / 2,
-      y: this.y + cy * this.size + this.size / 2
+      y: this.y + cy * this.size + this.size / 2,
     }
   }
+
   position2coord(x: number, y: number) {
     const fx = Math.abs(x - this.x) % this.size - this.size / 2
     const fy = Math.abs(y - this.y) % this.size - this.size / 2
     return {
       x: Math.floor((x - this.x) / this.size),
       y: Math.floor((y - this.y) / this.size),
-      offset: Math.sqrt(fx * fx + fy * fy)
+      offset: Math.sqrt(fx * fx + fy * fy),
     }
   }
+
   finder(params: any) {
     const defaults = {
       map: null,
       start: {},
       end: {},
-      type: 'path'
+      type: 'path',
     }
     const options = Object.assign({}, defaults, params)
     // When the start or end point is set on the wall
@@ -103,7 +108,8 @@ export class Map {
           if (to.x === options.end.x && to.y === options.end.y) {
             steps[to.y][to.x] = from
             finded = true
-          } else if (!steps[to.y][to.x]) {
+          }
+          else if (!steps[to.y][to.x]) {
             steps[to.y][to.x] = from
             newList.push(to)
           }
@@ -127,7 +133,8 @@ export class Map {
           result.unshift(current)
           current = steps[current.y][current.x]
         }
-      } else if (options.type === 'next') {
+      }
+      else if (options.type === 'next') {
         _next({ x: current.x + 1, y: current.y })
         _next({ x: current.x, y: current.y + 1 })
         _next({ x: current.x - 1, y: current.y })
@@ -178,13 +185,13 @@ export class BaseMap extends Map {
                   break
                 case '0011':
                   context.beginPath()
-                  context.arc(pos.x - this.size / 2, pos.y - this.size / 2, this.size / 2, 0, .5 * Math.PI, false)
+                  context.arc(pos.x - this.size / 2, pos.y - this.size / 2, this.size / 2, 0, 0.5 * Math.PI, false)
                   context.stroke()
                   context.closePath()
                   break
                 case '1001':
                   context.beginPath()
-                  context.arc(pos.x + this.size / 2, pos.y - this.size / 2, this.size / 2, .5 * Math.PI, 1 * Math.PI, false)
+                  context.arc(pos.x + this.size / 2, pos.y - this.size / 2, this.size / 2, 0.5 * Math.PI, 1 * Math.PI, false)
                   context.stroke()
                   context.closePath()
                   break
@@ -222,7 +229,8 @@ export class BeanMap extends Map {
               context.arc(pos.x, pos.y, 3 + this.times % 2, 0, 2 * Math.PI, true)
               context.fill()
               context.closePath()
-            } else {
+            }
+            else {
               context.fillRect(pos.x - 2, pos.y - 2, 4, 4)
             }
           }

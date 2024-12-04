@@ -1,24 +1,25 @@
-import { GlobalEnv } from '~/util/Interfaces'
-import { Map,BaseMap,BeanMap } from './Map'
-import { Item, LogoItem,NameItem,ScoreLevelItem,StatusItem,LifeItem,PlayerItem,NpcItem,OverItem,FinalScoreItem} from './Item'
+import type { GlobalEnv } from '~/util/Interfaces'
+import { FinalScoreItem, Item, LifeItem, LogoItem, NameItem, NpcItem, OverItem, PlayerItem, ScoreLevelItem, StatusItem } from './Item'
+import { BaseMap, BeanMap, Map } from './Map'
 
 export class Stage {
   _params: any
-  index: number = 0                                              // Scene Index
-  status: number = 0		                                         // Scene state, 0 means inactive/finished, 1 means normal, 2 means paused, 3 means temporary state
-  timeout: number = 0				           	                         // Countdown (for process animation state judgment)
-  CONFIG: any = {}                                               // map base data
-  maps: Map[] = []                                               // map queue
-  BaseMap!: Map                                                  // base map
-  BeanMap!: Map                                                  // Bean map
-  items: Item[] = []                                             // object queue
-  NPCs: Item[] = []                                              // NPC object queue
-  PLAYER!: Item                                                  // player object
+  index: number = 0 // Scene Index
+  status: number = 0 // Scene state, 0 means inactive/finished, 1 means normal, 2 means paused, 3 means temporary state
+  timeout: number = 0 // Countdown (for process animation state judgment)
+  CONFIG: any = {} // map base data
+  maps: Map[] = [] // map queue
+  BaseMap!: Map // base map
+  BeanMap!: Map // Bean map
+  items: Item[] = [] // object queue
+  NPCs: Item[] = [] // NPC object queue
+  PLAYER!: Item // player object
   constructor(params: any = {}) {
     this._params = params
     Object.assign(this, this._params)
   }
-  update: (globalObj: GlobalEnv) => boolean | void = () => { }   // Sniffing, processing the relative relationship of different objects under the layout
+
+  update: (globalObj: GlobalEnv) => boolean | void = () => { } // Sniffing, processing the relative relationship of different objects under the layout
   // add object
   createItem(type: string, options: any) {
     let item: Item = new Item(options)
@@ -41,6 +42,7 @@ export class Stage {
     this.items.push(item)
     return item
   }
+
   // reset object position
   resetItems() {
     this.status = 1
@@ -53,6 +55,7 @@ export class Stage {
       }
     })
   }
+
   // Add map
   createMap(type: string, options: any) {
     let map: Map = new Map(options)
@@ -65,6 +68,7 @@ export class Stage {
     this.maps.push(map)
     return map
   }
+
   // reset map
   resetMaps() {
     this.status = 1
@@ -76,6 +80,7 @@ export class Stage {
       map.imageData = null
     })
   }
+
   // reset the scene
   reset() {
     Object.assign(this, this._params)
@@ -85,13 +90,13 @@ export class Stage {
 }
 
 export class SplashStage extends Stage {
-  constructor(options: {}) {
+  constructor(options: any) {
     super(options)
   }
 }
 
 export class GameStage extends Stage {
-  constructor(options: {}) {
+  constructor(options: any) {
     super(options)
     this.update = (globalObj: GlobalEnv) => {
       if (this.status === 1) {
@@ -106,7 +111,8 @@ export class GameStage extends Stage {
               if (item.status === 3) {
                 item.status = 4
                 globalObj.SCORE += 10
-              } else {
+              }
+              else {
                 this.status = 3
                 this.timeout = 30
               }
@@ -114,14 +120,16 @@ export class GameStage extends Stage {
           }
         })
         // When there are no items, go to the next level
-        if (JSON.stringify(this.BeanMap.data).indexOf('0') < 0) {
+        if (!JSON.stringify(this.BeanMap.data).includes('0')) {
           return true
         }
-      } else if (this.status === 3 && !this.timeout) {
+      }
+      else if (this.status === 3 && !this.timeout) {
         globalObj.LIFE--
         if (globalObj.LIFE > 0) {
           this.resetItems()
-        } else {
+        }
+        else {
           return false
         }
       }
@@ -130,7 +138,7 @@ export class GameStage extends Stage {
 }
 
 export class EndStage extends Stage {
-  constructor(options: {}) {
+  constructor(options: any) {
     super(options)
   }
 }

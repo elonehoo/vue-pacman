@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue'
-import { CANVAS_HEIGHT, CANVAS_WIDTH, MAP_DATA } from '~/util/Constant'
-import { GlobalEnv } from '~/util/Interfaces'
-import { getCanvasElementById, getCanvasRenderingContext2D } from '~/util/Utils'
-import type { Stage } from '~/methods/Stage'
-import { EndStage, GameStage, SplashStage } from '~/methods/Stage'
-import type { Map } from '~/methods/Map'
-import { BaseMap, BeanMap } from '~/methods/Map'
 import type { Item } from '~/methods/Item'
-import { LifeItem, LogoItem, NameItem, NpcItem, PlayerItem, ScoreLevelItem, StatusItem } from '~/methods/Item'
+import type { Map } from '~/methods/Map'
+import type { Stage } from '~/methods/Stage'
+import { onMounted, reactive } from 'vue'
+import { GameStage, SplashStage } from '~/methods/Stage'
+import { CANVAS_HEIGHT, CANVAS_WIDTH, MAP_DATA } from '~/util/Constant'
+import { getCanvasElementById, getCanvasRenderingContext2D } from '~/util/Utils'
 
 const $canvas = ref()
 const $context = ref()
@@ -242,7 +239,8 @@ function drawCanvas() {
   $context.value.fillRect(0, 0, WIDTH.value, HEIGHT.value)
 }
 function stopAnimate() {
-  if (handler.value) cancelAnimationFrame(handler.value)
+  if (handler.value)
+    cancelAnimationFrame(handler.value)
 }
 function gameOver() {
   setStage(stages.length - 1)
@@ -252,45 +250,45 @@ function gameOver() {
 
 <template>
   <div class="wrapper">
-			<div class="mod-game">
-				<canvas id="canvas" class="canvas" width="960" height="640">不支持画布</canvas>
-				<div class="info">
-					<p>Press [space/enter] to pause or continue</p>
-          <p>[←↑↓→] to move</p>
-				</div>
-			</div>
-		</div>
+    <div class="mod-game">
+      <canvas id="canvas" class="canvas" width="960" height="640">不支持画布</canvas>
+      <div class="info">
+        <p>Press [space/enter] to pause or continue</p>
+        <p>[←↑↓→] to move</p>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped lang="scss">
 *{padding:0;margin:0;}
-			.wrapper{
-				width: 960px;
-				margin:0 auto;
-				color:#999;
-			}
-			canvas{display:block;background: #000;}
-			.mod-game .info{
-				padding: 10px 0;
-				margin-bottom: 5px;
-				line-height: 20px;
-				text-align: center;
-				color: #666;
-			}
-			.mod-game .info p{
-				line-height: 20px;
-				font-size: 14px;
-				color: #666;
-			}
-			.mod-game .intro{
-				padding: 10px 15px;
-				background: #f8f8f8;
-				border-radius: 5px;
-			}
-			.mod-game .intro p{
-				line-height: 22px;
-				text-indent: 2em;
-				font-size: 14px;
-				color: #666;
-			}
+      .wrapper{
+        width: 960px;
+        margin:0 auto;
+        color:#999;
+      }
+      canvas{display:block;background: #000;}
+      .mod-game .info{
+        padding: 10px 0;
+        margin-bottom: 5px;
+        line-height: 20px;
+        text-align: center;
+        color: #666;
+      }
+      .mod-game .info p{
+        line-height: 20px;
+        font-size: 14px;
+        color: #666;
+      }
+      .mod-game .intro{
+        padding: 10px 15px;
+        background: #f8f8f8;
+        border-radius: 5px;
+      }
+      .mod-game .intro p{
+        line-height: 22px;
+        text-indent: 2em;
+        font-size: 14px;
+        color: #666;
+      }
 </style>
