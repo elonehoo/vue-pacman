@@ -30,7 +30,9 @@ export class Map {
   }
 
   set(x: number, y: number, value: number) {
-    if (this.data[y]) { this.data[y][x] = value }
+    if (this.data[y]) {
+      this.data[y][x] = value
+    }
   }
 
   coord2position(cx: number, cy: number) {
@@ -70,7 +72,7 @@ export class Map {
     // map of steps
     const steps: Vector[][] = []
     for (let y = yLength; y--;) {
-      steps[y] = new Array(xLength).fill(0)
+      steps[y] = Array.from({ length: xLength }).fill(0) as Vector[]
     }
     // Get the value on the map
     const _getValue = (x: number, y: number) => {
@@ -195,7 +197,7 @@ export class BaseMap extends Map {
                   context.stroke()
                   context.closePath()
                   break
-                default:
+                default: {
                   const dist = this.size / 2
                   code.forEach((v, index) => {
                     if (v) {
@@ -206,6 +208,8 @@ export class BaseMap extends Map {
                       context.closePath()
                     }
                   })
+                  break
+                }
               }
             }
           }
@@ -218,7 +222,7 @@ export class BaseMap extends Map {
 export class BeanMap extends Map {
   constructor(options: {}) {
     super(options)
-    this.draw = (context: any, globalObj: GlobalEnv) => {
+    this.draw = (context: any, _globalObj: GlobalEnv) => {
       for (let j = 0; j < this.yLength; j++) {
         for (let i = 0; i < this.xLength; i++) {
           if (!this.get(i, j)) {
