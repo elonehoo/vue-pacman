@@ -23,15 +23,33 @@ export class Stage {
   // add object
   createItem(type: string, options: any) {
     let item: Item = new Item(options)
-    if (type === 'logo') { item = new LogoItem(options) }
-    if (type === 'name') { item = new NameItem(options) }
-    if (type === 'score_level') { item = new ScoreLevelItem(options) }
-    if (type === 'status') { item = new StatusItem(options) }
-    if (type === 'life') { item = new LifeItem(options) }
-    if (type === 'npc') { item = new NpcItem(options) }
-    if (type === 'player') { item = new PlayerItem(options) }
-    if (type === 'over') { item = new OverItem(options) }
-    if (type === 'final_score') { item = new FinalScoreItem(options) }
+    if (type === 'logo') {
+      item = new LogoItem(options)
+    }
+    if (type === 'name') {
+      item = new NameItem(options)
+    }
+    if (type === 'score_level') {
+      item = new ScoreLevelItem(options)
+    }
+    if (type === 'status') {
+      item = new StatusItem(options)
+    }
+    if (type === 'life') {
+      item = new LifeItem(options)
+    }
+    if (type === 'npc') {
+      item = new NpcItem(options)
+    }
+    if (type === 'player') {
+      item = new PlayerItem(options)
+    }
+    if (type === 'over') {
+      item = new OverItem(options)
+    }
+    if (type === 'final_score') {
+      item = new FinalScoreItem(options)
+    }
     if (item.location) {
       const position = item.location.coord2position(item.coord.x, item.coord.y)
       item.x = position.x
@@ -59,8 +77,12 @@ export class Stage {
   // Add map
   createMap(type: string, options: any) {
     let map: Map = new Map(options)
-    if (type === 'base') { map = new BaseMap(options) }
-    if (type === 'bean') { map = new BeanMap(options) }
+    if (type === 'base') {
+      map = new BaseMap(options)
+    }
+    if (type === 'bean') {
+      map = new BeanMap(options)
+    }
     map.data = JSON.parse(JSON.stringify(map.data))
     map.yLength = map.data.length
     map.xLength = map.data[0].length
